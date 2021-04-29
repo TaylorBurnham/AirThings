@@ -2,6 +2,7 @@ import struct
 import logging
 from bluepy.btle import UUID, Peripheral, Scanner, DefaultDelegate
 
+
 class WavePlusPlus():
     def __init__(self, SerialNumber):
         self.logger = logging.getLogger()
@@ -13,7 +14,8 @@ class WavePlusPlus():
         self.uuid = UUID("b42e2a68-ade7-11e4-89d3-123b93f75cba")
 
     def connect(self):
-        self.logger.debug("Attempting connection to device with Serial Number {}".format(self.SN))
+        self.logger.debug(
+            f"Attempting connection to device {self.SN}")
         if self.MacAddr is None:
             scanner = Scanner().withDelegate(DefaultDelegate())
             searchCount = 0
@@ -23,11 +25,15 @@ class WavePlusPlus():
                 searchCount += 1
                 for dev in devices:
                     ManuData = dev.getValueText(255)
-                    self.logger.debug("Checking if Device {} / {} is WavePlus".format(dev.addr, ManuData))
+                    self.logger.debug(
+                        f"Checking if {dev.addr} is WavePlusPlus {ManuData}"
+                    )
                     if ManuData:
                         SN = self.parseSerialNumber(ManuData)
                         if SN == self.SN:
-                            self.logger.debug("Found Device {} with Serial Number {}".format(dev.addr, SN))
+                            self.logger.debug(
+                                f"Found {dev.addr} with SN {SN}"
+                            )
                             self.MacAddr = dev.addr
                 if searchCount >= 50:
                     # Set to false if we hit 50.
@@ -35,11 +41,10 @@ class WavePlusPlus():
                     self.MacAddr = False
             if self.MacAddr is None or not self.MacAddr:
                 self.logger.debug("Could not find device.")
-                sys.exit(1)
 
         # Initialize Device
         if self.periph is None:
-            self.logger.info("Connecting to Device {}".format(self.MacAddr))
+            self.logger.info(f"Connecting to Device {self.MacAddr}")
             self.periph = Peripheral(self.MacAddr)
         if self.curr_val_char is None:
             self.curr_val_char = self.periph.getCharacteristics(
@@ -58,7 +63,6 @@ class WavePlusPlus():
     def read(self):
         if (self.curr_val_char is None):
             self.logger.debug("ERROR: Devices are not connected.")
-            sys.exit(1)
         raw_data = self.curr_val_char.read()
         sensor_data = self.parseSensors(raw_data)
         return sensor_data
@@ -67,7 +71,7 @@ class WavePlusPlus():
     def parseSerialNumber(ManuDataHexStr):
         ManuData = bytearray.fromhex(ManuDataHexStr)
         if (((ManuData[1] << 8) | ManuData[0]) == 0x0334):
-            SN  =  ManuData[2]
+            SN = ManuData[2]
             SN |= (ManuData[3] << 8)
             SN |= (ManuData[4] << 16)
             SN |= (ManuData[5] << 24)
@@ -120,9 +124,9 @@ class WavePlusPlus():
                 }
             }
         else:
-            self.logger.info("Unknown Sensor Version {}".format(sensor_version))
-            self.logger.info("Raw Output: {}".format(raw_data))
-            sys.exit(1)
+            self.logger.info(
+                f"Unknown Sensor Version {sensor_version}")
+            self.logger.info(f"Raw Output: {raw_data}")
         return sensor_data
 
     @staticmethod
@@ -130,5 +134,5 @@ class WavePlusPlus():
         if 0 <= radon_raw <= 16383:
             radon = radon_raw
         else:
-            radon = "N/A" # bad read
+            radon = "N/A"  # bad read
         return radon

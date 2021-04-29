@@ -1,63 +1,28 @@
 # Airthings Thingies
 
-This will be a general purpose repository for storing code and other thingies related to Airthings devices.
+This is a general purpose repository for my Airthings devices. This is based off the [WavePlus Reader](https://github.com/Airthings/waveplus-reader) source code with support for Python 3.x. This has been developed on a Raspberry Pi 3b+ but it should work on any Linux system with `libglib2.0-dev` and `bluepy`.
 
-## Current Solutions
+## Usage
 
-* WavePlusPlus - A partial rewrite of the existing [WavePlus Reader](https://github.com/Airthings/waveplus-reader) published by [Airthings](https://github.com/Airthings).
+```
+usage: airthings.py [-h] [--config CONFIG] [--device-serial DEVICE_SERIAL]
 
-## WavePlusPlus
+Airthings WavePlusPlus
 
-A Python 3 script that will read the serial number as the first parameter and spit out a JSON file with the results. There's two values I am not sure what they do and are ignored in the source code. I've filed these as `tbd1` and `tbd2` and may disappear without notice if I confirm they have no purpose.
+optional arguments:
+  -h, --help            show this help message and exit
+  --config CONFIG, -c CONFIG
+                        The path to the configuration file.
+  --device-serial DEVICE_SERIAL, -d DEVICE_SERIAL
+                        The serial number for the device. Can be a comma
+                        separated list.
+```
 
-Usage
+## Details
 
-This must be run as root (until I figure out how to not have to run it as root):
+This is still a work in progress but the gist of it is:
 
-    ./waveplusplus-read.py <serial>
+ * Update `config.json` with your device information. Each entry should have it's own JSON node.
+ * Run the script as root unless you've figured out how to run it as a user (I haven't *yet*)
 
-To test it for a bit (before running as a daemon):
-
-    while true; do ./waveplusplus-read.py <serial>; sleep 60; done
-
-Example output to file:
-
-    {
-        "config": {
-            "version": 1,
-            "tbd1": 10,
-            "tbd2": 0
-        },
-        "atmospheric": {
-            "humidity": {
-                "value": 49.5,
-                "unit": "%rH"
-            },
-            "temperature": {
-                "value": 24.2,
-                "unit": "C"
-            },
-            "pressure": {
-                "value": 1011.3,
-                "unit": "hPa"
-            }
-        },
-        "particle": {
-            "radon_lt": {
-                "value": 18,
-                "unit": "Bq/m3"
-            },
-            "radon_st": {
-                "value": 9,
-                "unit": "Bq/m3"
-            },
-            "co2": {
-                "value": 956.0,
-                "unit": "ppm"
-            },
-            "voc": {
-                "value": 462.0,
-                "unit": "ppb"
-            }
-        }
-    }
+ The output will end up in the `data` folder by default unless you set it in the `config.json` file.

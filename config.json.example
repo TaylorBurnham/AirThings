@@ -1,4 +1,14 @@
 {
+    "devices": [
+        {
+            "name": "Device 1",
+            "serial": "0000000000"
+        },
+        {
+            "name": "Device 2",
+            "serial": "0000000000"
+        }
+    ],
     "output": {
         "path": "data"
     },
@@ -9,15 +19,5 @@
             "path": "logs"
         },
         "logformat": "[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
-    },
-    "devices": [
-        {
-            "name": "Device 1",
-            "serial": "0000000000"
-        },
-        {
-            "name": "Device 2",
-            "serial": "0000000000"
-        }
-    ]
+    }
 }

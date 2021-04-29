@@ -4,13 +4,16 @@ import sys
 import json
 import logging
 import argparse
+from time import sleep
 from datetime import datetime
 from airthings.waveplusplus import WavePlusPlus
 
 parser = argparse.ArgumentParser(description='Airthings WavePlusPlus')
-parser.add_argument('--config', '-c', default='config.json', 
+parser.add_argument(
+    '--config', '-c', default='config.json',
     help='The path to the configuration file.')
-parser.add_argument('--device-serial', '-d',
+parser.add_argument(
+    '--device-serial', '-d',
     help='The serial number for the device. Can be a comma separated list.')
 
 if __name__ == "__main__":
@@ -41,7 +44,7 @@ if __name__ == "__main__":
                 config = json.load(fh)
             devices = config['devices']
         else:
-            raise FileNotFoundException(
+            raise FileNotFoundError(
                 "No devices passed and no config.json found."
             )
         if 'output' in config:
@@ -67,26 +70,26 @@ if __name__ == "__main__":
             else:
                 logformat = "%(asctime)s [%(levelname)-5.5s] %(message)s"
             logFormatter = logging.Formatter(logformat)
-            rootLogger = logging.getLogger()
+            logger = logging.getLogger()
             if logfile['enabled']:
                 fileHandler = logging.FileHandler(logFilePath)
                 fileHandler.setFormatter(logFormatter)
-                rootLogger.addHandler(fileHandler)
+                logger.addHandler(fileHandler)
 
             consoleHandler = logging.StreamHandler()
             consoleHandler.setFormatter(logFormatter)
-            rootLogger.addHandler(consoleHandler)
-            rootLogger.setLevel(logging.INFO)
+            logger.addHandler(consoleHandler)
+            logger.setLevel(logging.INFO)
 
-            logging.info("Script Initialized")
-    
+            logger.info("Script Initialized")
+
     if not os.path.exists(dataPath):
-        logging.info(f"Creating Output Path: {dataPath}")
+        logger.info(f"Creating Output Path: {dataPath}")
         os.mkdir(dataPath)
 
     for device in devices:
         serial = int(device['serial'])
-        logging.info(f"Querying Device {serial}")
+        logger.info(f"Querying Device {serial}")
         sensors = None
         for i in range(5):
             waveplus = WavePlusPlus(serial)
@@ -94,12 +97,12 @@ if __name__ == "__main__":
             sensors = waveplus.read()
             waveplus.disconnect()
             if sensors:
-                logging.info("Successfully queried device.")
+                logger.info("Successfully queried device.")
                 break
             else:
-                logging.warn(
+                logger.warn(
                     "Failed to query device. Trying again in 5 seconds.")
-                time.sleep(5)
+                sleep(5)
         else:
             logger.warn("Failed to query after five tries. Giving up!")
         dts = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
