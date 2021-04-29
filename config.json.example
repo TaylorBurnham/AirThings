@@ -1,0 +1,23 @@
+{
+    "output": {
+        "path": "data"
+    },
+    "logging": {
+        "enabled": true,
+        "logfile": {
+            "enabled": true,
+            "path": "logs"
+        },
+        "logformat": "[%(asctime)s] {%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
+    },
+    "devices": [
+        {
+            "name": "Device 1",
+            "serial": "0000000000"
+        },
+        {
+            "name": "Device 2",
+            "serial": "0000000000"
+        }
+    ]
+}
